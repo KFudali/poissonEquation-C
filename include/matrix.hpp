@@ -107,4 +107,16 @@ template<typename T> class Matrix
         {
             return *this;
         }
+        void removeRow(int row_id)
+        {
+            this->mat.erase(mat.begin() + row_id);
+        }
+        void removeCol(int col_id)
+        {
+            for_each(this->mat.begin(), this->mat.end(), [col_id](auto& vec)
+            {
+                vec.erase(vec.begin() + col_id);
+            });
+        }
+
 };

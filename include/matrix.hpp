@@ -98,7 +98,7 @@ template<typename T> class Matrix
             {
                 for(int j = 0; j < this->col; j++)
                 {
-                  result[i] += this->mat[i][j]*vec[i];
+                  result[i] = result[i] + this->mat[j][i]*vec[j];
                 }
             }
             return result;

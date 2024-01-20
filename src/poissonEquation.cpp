@@ -50,7 +50,7 @@ int main(){
     Matrix K_g(0., nx*nx, ny*ny);
     // assemble global matrix
     double val;
-    K_e.printMatrix();
+    // K_e.printMatrix();
     std::cout<<std::endl;
     for(int i = 0; i < n_elements; i++)
     {
@@ -63,34 +63,59 @@ int main(){
             }
         }
     }
-    K_g.printMatrix();
-    std::cout<<std::endl;
+    // K_g.printMatrix();
+    // std::cout<<std::endl;
 
     std::vector<int> bottom_ids(nx, 0);
     std::vector<int> top_ids(nx, 0);
     std::vector<int> left_ids(ny, 0);
     std::vector<int> right_ids(ny, 0);
+    std::vector<int> boudnary_ids;
 
     for(int i = 0; i < nx; i++)
     {
         bottom_ids[i] = i;
         top_ids[i] = (nx * (ny - 1)) + i;
         left_ids[i] = i*nx;
-        right_ids[i] = (i+1)*nx;
+        right_ids[i] = (i+1)*nx - 1;
+        boudnary_ids.push_back(bottom_ids[i]);
+        boudnary_ids.push_back(top_ids[i]);
+        boudnary_ids.push_back(left_ids[i]);
+        boudnary_ids.push_back(right_ids[i]);
     };
 
-    std::vector<double> u(nx*ny, 1.);
-    std::vector<double> rhs(nx*ny, 1.);
+    std::sort(boudnary_ids.begin(), boudnary_ids.end());
+    boudnary_ids.erase(std::unique(boudnary_ids.begin(), boudnary_ids.end()), boudnary_ids.end());
+    // std::cout<<"SIZE = "<<(int)boudnary_ids.size();
+    // for_each(boudnary_ids.begin(), boudnary_ids.end(), [](const auto& elem){std::cout<<elem<<std::endl;});
+
+    std::vector<double> u(nx*ny, 0.);
+    std::vector<double> rhs(nx*ny, 0.);
 
     for(int i = 0; i < nx; i++)
     {
-        u[bottom_ids[i]] = 1;
+        u[top_ids[i]] = -1.;
     }
+
     rhs = K_g*u;
 
-    // deleting elements from global stifness matrix - needed for dirichlet BC
+    // for_each( rhs.begin(),  rhs.end(), [](const auto& elem){std::cout<<elem<<std::endl;});
 
+    // K_g.printMatrix();
+    // std::cout<<std::endl;
+    // std::cout<<std::endl;
 
+    // // deleting elements from global stifness matrix - needed for dirichlet BC
+    for(int i = (int)boudnary_ids.size() - 1; i >= 0 ; i--)
+    {
+        std::cout<<boudnary_ids[i]<<std::endl;
+        K_g.removeRow(boudnary_ids[i]);
+        K_g.removeCol(boudnary_ids[i]);
+        rhs.erase(rhs.begin() + boudnary_ids[i]);
+    };
 
+    K_g.printMatrix();
+
+    for_each( rhs.begin(),  rhs.end(), [](const auto& elem){std::cout<<elem<<std::endl;});
 
 } 

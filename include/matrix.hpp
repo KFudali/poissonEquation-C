@@ -5,21 +5,29 @@
 template<typename T> class Matrix
 {
     private:
-        int row;
-        int col;
-        int vec_id;
 
     public:
-
+        int row;
+        int col;
         std::vector<std::vector<T>> mat;
-        Matrix(T init_val, int c, int r) :  col(c), row(r)
+        Matrix(){};
+
+        Matrix(T init_val, int r, int c) :  row(r), col(c)
         {
-            std::vector<T> row_vec(row, init_val);
-            std::vector<std::vector<T>> matrix(col, row_vec);
+            std::vector<T> col_vec(col, init_val);
+            std::vector<std::vector<T>> matrix(row, col_vec);
             this->mat = matrix;
         };
         Matrix(std::vector<std::vector<T>> init_matrix) : mat(init_matrix)
         {};
+        Matrix(std::vector<T> init_vec)
+        {
+            row = 1;
+            col = (int)init_vec.size();
+            std::vector<std::vector<T>> matrix(1, init_vec);
+            this->mat = matrix;
+            mat[0] = init_vec;
+        };
 
         ~Matrix() {};
 
@@ -42,25 +50,6 @@ template<typename T> class Matrix
         {
             return this->mat[row_id][col_id];
         };
-        Matrix operator+(const Matrix mat_2)
-        {
-            if(this->row != mat_2.col &&  this->col != mat_2.col)
-            {
-                std::cout<<"Matrices have different dimensions and cannot be added!" << std::endl;
-                return *this;
-            }
-            else
-            {
-                for(int i = 0; i < this->row; i++)
-                {
-                    for(int j = 0; j < this->col; j++)
-                    {
-                        this->mat[i][j] += mat_2.mat[i][j];
-                    }
-                }
-                return *this;
-            }
-        };
         void set(int row_id, int col_id, T value)
         {
             this->mat[row_id][col_id] = value;
@@ -72,7 +61,19 @@ template<typename T> class Matrix
                 this->mat[i][col_num] = column[i];
             }
         };
+        Matrix transpose()
+        {
+            Matrix transposed_mat(this->mat[0][0], this->col, this->row);
 
+            for(int i = 0; i < this->row; i++)
+            {
+                for(int j = 0; j < this->col; j++)
+                {
+                    transposed_mat.mat[j][i] = this->mat[i][j];
+                }
+            }
+            return transposed_mat;
+        }
         void setRow(int row_num, const std::vector<T> row)
         {
            this->mat[row_num] = row;
@@ -103,13 +104,100 @@ template<typename T> class Matrix
             }
             return result;
         }
-        Matrix operator*(const Matrix mat)
+
+        Matrix operator*(const Matrix matrix)
         {
-            return *this;
+            Matrix result(0., this->row, matrix.col);
+            for(int i = 0; i < this->row; i++)
+            {
+                for(int j = 0; j < matrix.col; j++)
+                {
+                    for(int k = 0; k < this->col; k++)
+                    {
+                        result.mat[i][j] += this->mat[i][k]*matrix.mat[k][j];
+                    }
+                }
+            }
+            return result;
+        }
+        
+        Matrix operator-(const double T)
+        {
+            Matrix result(this->mat);
+
+            for(int i = 0; i < this->row; i++)
+            {
+                for(int j = 0; j < this->col; j++)
+                {
+                    result.set(i,j,this->mat[i][j] - T);
+                }
+            }
+            return result;
+        }
+        Matrix operator-(const Matrix matrix)
+        {
+            Matrix result(this->mat);
+
+            for(int i = 0; i < this->row; i++)
+            {
+                for(int j = 0; j < this->col; j++)
+                {
+                    result.mat[i][j] = this->mat[i][j] - matrix.mat[i][j];
+                }
+            }
+            result.row = this->row;
+            result.col = this->col;
+            return result;
+        }
+        Matrix operator+(const double a)
+        {
+            Matrix result(this->mat);
+
+            for(int i = 0; i < this->row; i++)
+            {
+                for(int j = 0; j < this->col; j++)
+                {
+                    result.set(i,j,this->mat[i][j] + a);
+                }
+            }a
+            resul.row = this->row;
+            result.col = this->col;
+            return result;
+        }
+        Matrix operator*(const double a)
+        {
+            Matrix result(this->mat);
+
+            for(int i = 0; i < this->row; i++)
+            {
+                for(int j = 0; j < this->col; j++)
+                {
+                    result.set(i,j,this->mat[i][j] * a);
+                }
+            }
+            result.row = this->row;
+            result.col = this->col;
+            return result;
+        }
+        Matrix operator+(const Matrix matrix)
+        {
+            Matrix result(this->mat);
+
+            for(int i = 0; i < this->row; i++)
+            {
+                for(int j = 0; j < this->col; j++)
+                {
+                    result.set(i,j,this->mat[i][j] + matrix.mat[i][j]);
+                }
+            }
+            result.row = this->row;
+            result.col = this->col;
+            return result;
         }
         void removeRow(int row_id)
         {
             this->mat.erase(mat.begin() + row_id);
+            this->row = this->row-1;
         }
         void removeCol(int col_id)
         {
@@ -117,6 +205,8 @@ template<typename T> class Matrix
             {
                 vec.erase(vec.begin() + col_id);
             });
+            this->col = this->col-1;
         }
+
 
 };

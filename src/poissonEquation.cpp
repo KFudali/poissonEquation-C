@@ -4,8 +4,10 @@
 #include <array>
 #include "../include/matrix.hpp"
 #include "../src/linearSolvers.cpp"
+#include "../src/plotContour.cpp"
 
-int main(){
+
+int main(int, char*[]){
 
     // FEM method (a bit sketchy since its taken from a roject done in MATLAB :| //
 
@@ -18,6 +20,7 @@ int main(){
 
     Matrix x0(0., 2, 4);
     // x0.printMatrix();
+
     // create Element stiffness matrix and the element node map
     Matrix K_e(2./3., 4, 4);
     std::vector<double> element_stiffnes =  {2./3., -1./6., -1./3., -1./6.,
@@ -45,7 +48,7 @@ int main(){
         element_nodes_ids.setRow(i, ids_vector);
     }
 
-    
+
     // assemble global matrix
     Matrix K_g(0., nx*nx, ny*ny);
     double val;
@@ -67,7 +70,8 @@ int main(){
     std::vector<int> top_ids(nx, 0);
     std::vector<int> left_ids(ny, 0);
     std::vector<int> right_ids(ny, 0);
-    std::vector<int> boudnary_ids;
+    std::vector<int> boundary_ids;
+    std::vector<int> interior_ids;
 
     for(int i = 0; i < nx; i++)
     {
@@ -75,14 +79,23 @@ int main(){
         top_ids[i] = (nx * (ny - 1)) + i;
         left_ids[i] = i*nx;
         right_ids[i] = (i+1)*nx - 1;
-        boudnary_ids.push_back(bottom_ids[i]);
-        boudnary_ids.push_back(top_ids[i]);
-        boudnary_ids.push_back(left_ids[i]);
-        boudnary_ids.push_back(right_ids[i]);
+        boundary_ids.push_back(bottom_ids[i]);
+        boundary_ids.push_back(top_ids[i]);
+        boundary_ids.push_back(left_ids[i]);
+        boundary_ids.push_back(right_ids[i]);
     };
 
-    std::sort(boudnary_ids.begin(), boudnary_ids.end());
-    boudnary_ids.erase(std::unique(boudnary_ids.begin(), boudnary_ids.end()), boudnary_ids.end());
+
+    std::sort(boundary_ids.begin(), boundary_ids.end());
+    boundary_ids.erase(std::unique(boundary_ids.begin(), boundary_ids.end()), boundary_ids.end());
+
+    for(int i = 0; i <nx*ny; i++)
+    {
+        if(std::find(boundary_ids.begin(), boundary_ids.end(), i) == boundary_ids.end())
+        {
+            interior_ids.push_back(i);
+        }
+    };
 
     std::vector<double> u(nx*ny, 0.);
     std::vector<double> rhs(nx*ny, 0.);
@@ -95,11 +108,11 @@ int main(){
     rhs = K_g*u;
 
     // deleting elements from global stifness matrix - needed for dirichlet BC
-    for(int i = (int)boudnary_ids.size() - 1; i >= 0 ; i--)
+    for(int i = (int)boundary_ids.size() - 1; i >= 0 ; i--)
     {
-        K_g.removeRow(boudnary_ids[i]);
-        K_g.removeCol(boudnary_ids[i]);
-        rhs.erase(rhs.begin() + boudnary_ids[i]);
+        K_g.removeRow(boundary_ids[i]);
+        K_g.removeCol(boundary_ids[i]);
+        rhs.erase(rhs.begin() + boundary_ids[i]);
     };
 
     // K_g.printMatrix();
@@ -110,8 +123,30 @@ int main(){
 
     u_solved = conjugateGradient(K_g, rhs_mat);
 
-    // u_solved.printMatrix();
-
-
+    u_solved.printMatrix();
     // Visualize the results (now that's gonna be hard:/ )
+    
+    int id;
+
+    // fill the full solution with solved domain
+    for(int i = 0; i < (int)interior_ids.size(); i++)
+    {
+        id = interior_ids[i];
+        u[id] = u_solved(i,0);
+    }
+
+    Matrix u_domain(0., nx,ny);
+
+    //Reshape matrix
+    for(int i = 0; i<nx; i++)
+    {
+        for(int j = 0; j<nx; j++)
+        {       
+            u_domain.set(i,j, u[i*ny + j]);
+        }
+    }
+
+    //Plot solution using VTK example 2D histogram
+    plotContour(u_domain, nx, ny);
+ 
 } 

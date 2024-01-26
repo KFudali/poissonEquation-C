@@ -36,7 +36,7 @@ template<typename T> class Matrix
             for_each(mat.begin(),
                      mat.end(),
                      [](const auto& column)
-                    {                                
+                    {                             
                         for_each(column.begin(),
                                  column.end(),
                                 [](const auto& elem)

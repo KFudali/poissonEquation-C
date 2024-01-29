@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.8)
 
 project(poissonEquation)
-add_executable(poissonEquation src/poissonEquation.cpp)
+
+
+file(GLOB SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+add_executable(poissonEquation ${SRC_FILES})
+
+include_directories(
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_SOURCE_DIR}/src)  
 
 find_package(VTK COMPONENTS 
   ChartsCore
@@ -32,7 +39,6 @@ vtk_module_autoinit(
 )
 
 target_include_directories(poissonEquation  PUBLIC include)
-target_link_directories(poissonEquation  PUBLIC src)
 set_target_properties(poissonEquation PROPERTIES
     CXX_STANDARD 17
 )

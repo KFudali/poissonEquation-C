@@ -2,9 +2,9 @@
 #include <vector>
 #include <algorithm>
 #include <array>
-#include "../include/matrix.hpp"
-#include "../src/linearSolvers.cpp"
-#include "../src/plotContour.cpp"
+#include "matrix.hpp"
+#include "linearSolvers.hpp"
+#include "plotContour.hpp"
 
 
 int main(int, char*[]){

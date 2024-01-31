@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <algorithm>
+#include <iostream>
 
 template<typename T> class Matrix
 {
@@ -159,8 +160,8 @@ template<typename T> class Matrix
                 {
                     result.set(i,j,this->mat[i][j] + a);
                 }
-            }a
-            resul.row = this->row;
+            }
+            result.row = this->row;
             result.col = this->col;
             return result;
         }

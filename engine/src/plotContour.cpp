@@ -1,4 +1,4 @@
-#include "plotContour.hpp"
+#include "../include/plotContour.hpp"
 
 
 // Reference https://examples.vtk.org/site/Cxx/Plotting/Histogram2D/

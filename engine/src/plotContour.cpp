@@ -2,7 +2,8 @@
 
 
 // Reference https://examples.vtk.org/site/Cxx/Plotting/Histogram2D/
-void plotContour(Matrix<double> A, int nx, int ny)
+void plotContour(Matrix<double> A, int nx, int ny,
+ vtkChartHistogram2D *chart)
 {
 // Define colors.
   vtkNew<vtkNamedColors> colors;
@@ -14,14 +15,12 @@ void plotContour(Matrix<double> A, int nx, int ny)
 
   // Set up a 2D scene, add an XY chart to it.
   int size = nx*ny;
-  vtkNew<vtkContextView> view;
-  view->GetRenderWindow()->SetSize(512, 512);
-  view->GetRenderWindow()->SetWindowName("PoissonEquationSolution");
-
-  view->GetRenderer()->SetBackground(backgroundColor.GetData());
+  // vtkNew<vtkContextView> view;
+  // view->GetRenderWindow()->SetSize(512, 512);
+  // view->GetRenderWindow()->SetWindowName("PoissonEquationSolution");
+  // view->GetRenderer()->SetBackground(backgroundColor.GetData());
 
   // Define a chart
-  vtkNew<vtkChartHistogram2D> chart;
 
   // Chart Title.
   chart->SetTitle("Poisson Equation Solution");
@@ -45,8 +44,6 @@ void plotContour(Matrix<double> A, int nx, int ny)
   dynamic_cast<vtkColorLegend*>(chart->GetLegend())->DrawBorderOff();
   chart->GetLegend()->GetBrush()->SetColor(legendBackgroundColor);
 
-  // Add the chart to the view.
-  view->GetScene()->AddItem(chart);
 
   vtkNew<vtkImageData> data;
   data->SetExtent(0, nx-1, 0, ny-1, 0, 0);
@@ -72,8 +69,5 @@ void plotContour(Matrix<double> A, int nx, int ny)
   transferFunction->AddRGBSegment(0, 0.2, 1., 0.2, 1.0, 1., 0.2, 0.2);
   transferFunction->Build();
   chart->SetTransferFunction(transferFunction);
-
-  view->GetRenderWindow()->Render();
-  view->GetInteractor()->Start();
 
 };

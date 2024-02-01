@@ -6,16 +6,13 @@
 #include "linearSolvers.hpp"
 #include "plotContour.hpp"
 #include "mainwindow.hpp"
-
-#include<QtWidgets/QApplication>
+#include "solution.hpp"
+#include <QtWidgets/QApplication>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
 
 int main(int argc, char *argv[]){
     
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    
-
     // FEM method (a bit sketchy since its taken from a roject done in MATLAB :| //
 
     const double Ly = 1;
@@ -130,7 +127,7 @@ int main(int argc, char *argv[]){
 
     u_solved = conjugateGradient(K_g, rhs_mat);
 
-    u_solved.printMatrix();
+    // u_solved.printMatrix();
     // Visualize the results (now that's gonna be hard:/ )
     
     int id;
@@ -154,7 +151,22 @@ int main(int argc, char *argv[]){
     }
 
     //Plot solution using VTK example 2D histogram
-    plotContour(u_domain, nx, ny);
- 
+
+    vtkNew<vtkChartHistogram2D> chart;
+
+    plotContour(u_domain, nx, ny, chart);
+
+    // view->GetInteractor()->Start();
+    // view->GetRenderWindow()->Render();
+    // Solution *solution = new Solution(u_domain, nx, ny);
+    // solution->plotSolution();
+
+    QApplication a(argc, argv);
+    MainWindow window;
+
+    window.addChart(chart);
+    window.show();
+
+    // delete solution;
     return a.exec();
 } 

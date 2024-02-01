@@ -20,4 +20,5 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkDataSetMapper.h>
 
-void plotContour(Matrix<double> A, int nx, int ny);
+void plotContour(Matrix<double> A, int nx, int ny,
+ vtkChartHistogram2D *chart);

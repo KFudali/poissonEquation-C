@@ -15,12 +15,6 @@ void plotContour(Matrix<double> A, int nx, int ny,
 
   // Set up a 2D scene, add an XY chart to it.
   int size = nx*ny;
-  // vtkNew<vtkContextView> view;
-  // view->GetRenderWindow()->SetSize(512, 512);
-  // view->GetRenderWindow()->SetWindowName("PoissonEquationSolution");
-  // view->GetRenderer()->SetBackground(backgroundColor.GetData());
-
-  // Define a chart
 
   // Chart Title.
   chart->SetTitle("Poisson Equation Solution");

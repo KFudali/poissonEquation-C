@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	mRenderWindow->AddRenderer(mRenderer);
 	ui->openGLWidget->setRenderWindow(mRenderWindow);
 
+	
+
 	// Set the UI connections
 	QObject::connect(ui->pushButton, &QPushButton::clicked,
 		this, &MainWindow::render);

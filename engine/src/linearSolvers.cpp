@@ -1,4 +1,4 @@
-#include "linearSolvers.hpp"
+#include "linearSolvers.h"
 
 Matrix<double> conjugateGradient(Matrix<double> A, Matrix<double> b)
 {

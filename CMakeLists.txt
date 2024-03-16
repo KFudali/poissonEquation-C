@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.20)
-
 project(poissonEquation)
 
 set(CMAKE_AUTOMOC ON)
@@ -13,15 +12,17 @@ set(ENGINE_DIR ${PROJECT_SOURCE_DIR}/engine)
 
 set(EGNINE_SRC  ${ENGINE_DIR}/src/linearSolvers.cpp
                 ${ENGINE_DIR}/src/plotContour.cpp
-                ${ENGINE_DIR}/src/main.cpp)
+                ${ENGINE_DIR}/src/main.cpp
+                ${ENGINE_DIR}/src/model.cpp)
 
-set(EGNINE_HEADERS  ${ENGINE_DIR}/include/linearSolvers.hpp
-                    ${ENGINE_DIR}/include/plotContour.hpp
-                    ${ENGINE_DIR}/include/matrix.hpp)
+set(EGNINE_HEADERS  ${ENGINE_DIR}/include/linearSolvers.h
+                    ${ENGINE_DIR}/include/plotContour.h
+                    ${ENGINE_DIR}/include/matrix.h
+                    ${ENGINE_DIR}/include/model.h)
 
 set(UI_SRC  ${UI_DIR}/src/mainwindow.cpp)
 
-set(UI_HEADERS    ${UI_DIR}/include/mainwindow.hpp
+set(UI_HEADERS    ${UI_DIR}/include/mainwindow.h
                   ${UI_DIR}/include/Forms/mainwindow.ui)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS  ${CMAKE_AUTOUIC_SEARCH_PATHS} 
@@ -50,7 +51,6 @@ set(INCLUDE_DIRS
 # endforeach()
 
 #======================= INCLUSION OF OpenGL ===================#
-
 find_package(OpenGL QUIET)
 
 #======================= INCLUSION OF QT6 ======================#

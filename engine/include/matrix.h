@@ -20,7 +20,10 @@ template<typename T> class Matrix
             this->mat = matrix;
         };
         Matrix(std::vector<std::vector<T>> init_matrix) : mat(init_matrix)
-        {};
+        {
+            row = (int)mat.size();
+            col = (int)mat[0].size();
+        };
         Matrix(std::vector<T> init_vec)
         {
             row = 1;

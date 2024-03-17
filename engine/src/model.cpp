@@ -4,20 +4,10 @@
 Model::Model(int _nx, int _ny) : nx(_nx), ny(_ny){
 
     this->n_elements = (nx - 1) * (ny - 1);
-
     this->K_g = std::make_unique<Matrix<double>>(0., nx*nx, ny*ny);
     this->rhs = std::make_unique<Matrix<double>>(0., 1, nx*ny);
     this->u_solved = std::make_unique<Matrix<double>>(0., nx, ny);
     this->u_full = std::make_unique<Matrix<double>>(0., nx, ny);
-
-    std::vector<std::vector<double>> K_e_vec = {
-        {2./3., -1./6., -1./3., -1./6.},
-        {-1./6., 2./3., -1./6., -1./3.},
-        {-1./3., -1./6., 2./3., -1./6.},
-        {-1./6., -1./3., -1./6., 2./3.}
-    };
-    this->K_e = std::make_unique<Matrix<double>>(K_e_vec);
-    updateBoundaryIds();
 }
 
 Model::~Model(){}
@@ -61,7 +51,17 @@ void Model::assembleKg(){
 
 void Model::assembleGlobalMatrices()
 {
+    std::vector<std::vector<double>> K_e_vec = {
+        {2./3., -1./6., -1./3., -1./6.},
+        {-1./6., 2./3., -1./6., -1./3.},
+        {-1./3., -1./6., 2./3., -1./6.},
+        {-1./6., -1./3., -1./6., 2./3.}
+    };
+    this->K_e = std::make_unique<Matrix<double>>(K_e_vec);
+    
+    updateBoundaryIds();
     assembleKg();
+    assembleRhs();
 }
 
 void Model::updateBoundaryIds(){
@@ -69,19 +69,18 @@ void Model::updateBoundaryIds(){
     top_ids.reserve(nx);
     left_ids.reserve(ny);
     right_ids.reserve(ny);
-    boundary_ids.reserve(nx + ny + nx + ny);
-    interior_ids.reserve(nx*ny);
+    boundary_ids.reserve(2 * nx + 2 * ny);
+    interior_ids.reserve(nx * ny);
 
     for (int i = 0; i < nx; i++) {
-        bottom_ids[i] = i;
-        top_ids[i] = (nx * (ny - 1)) + i;
+        bottom_ids.push_back(i);
+        top_ids.push_back((nx * (ny - 1)) + i);
     }
 
     for (int i = 0; i < ny; i++) {
-        left_ids[i] = i * nx;
-        right_ids[i] = (i + 1) * nx - 1;
+        left_ids.push_back(i * nx);
+        right_ids.push_back((i + 1) * nx - 1);
     }
-
     boundary_ids.insert(boundary_ids.end(), bottom_ids.begin(), bottom_ids.end());
     boundary_ids.insert(boundary_ids.end(), top_ids.begin(), top_ids.end());
     boundary_ids.insert(boundary_ids.end(), left_ids.begin(), left_ids.end());
@@ -94,25 +93,27 @@ void Model::updateBoundaryIds(){
     interior_ids.erase(std::remove_if(interior_ids.begin(), interior_ids.end(),
 [&](int id){return std::binary_search(boundary_ids.begin(), boundary_ids.end(), id);}),
      interior_ids.end());
+
 }
 
-void Model::calculateRhs(){
+void Model::assembleRhs(){
 
     std::vector<double> u(nx*ny, 0.);
     std::vector<double> rhs_vec(nx*ny, 0.);
 
-    for(int i = 0; i < nx; i++){
-        u[top_ids[i]] = top_value;
-        u[bottom_ids[i]] = bottom_value;
-    }
     for(int i = 0; i < ny; i++){
         u[right_ids[i]] = right_value;
         u[left_ids[i]] = right_value;
     }
 
+    for(int i = 0; i < nx; i++){
+        u[top_ids[i]] = top_value;
+        u[bottom_ids[i]] = bottom_value;
+    }
+
     rhs_vec = *this->K_g*u;
 
-    for (auto it = boundary_ids.rbegin(); it != boundary_ids.rend(); ++it) {
+    for (auto it = this->boundary_ids.rbegin(); it != this->boundary_ids.rend(); ++it) {
         this->K_g->removeRow(*it);
         this->K_g->removeCol(*it);
         rhs_vec.erase(rhs_vec.begin() + *it);
@@ -122,24 +123,33 @@ void Model::calculateRhs(){
 
 
 void Model::calculateSolution(){
-    this->u_solved = conjugateGradient(*K_g, *rhs);
-    
-    int id;
-    // fill the full solution with solved domain
-    for(int i = 0; i < (int)interior_ids.size(); i++)
-    {
-        id = interior_ids[i];
-        u[id] = u_solved(i,0);
-    }
 
-    Matrix u_domain(0., nx,ny);
-    //Reshape matrix
-    for(int i = 0; i<nx; i++)
-    {
-        for(int j = 0; j<nx; j++)
-        {       
-            u_domain.set(i,j, u[i*ny + j]);
-        }
-    }
-    u_domain.printMatrix();
+    // this->rhs->printMatrix();
+    // this->K_g->printMatrix();
+
+    Matrix<double> sol = conjugateGradient(*K_g, *rhs);
+    this->u_solved = std::make_unique<Matrix<double>>(std::move(sol));
+
+    // int id;
+    // fill the full solution with solved domain
+
+    // for(const auto& id : interior_ids){
+
+    // int id;
+    // for(int i = 0; i < (int)interior_ids.size(); i++)
+    // {
+    //     id = interior_ids[i];
+    //     u[id] = this->u_solved.mat[i][0];
+    // }
+
+    // Matrix u_domain(0., nx,ny);
+    // //Reshape matrix
+    // for(int i = 0; i<nx; i++)
+    // {
+    //     for(int j = 0; j<nx; j++)
+    //     {       
+    //         u_domain.set(i,j, u[i*ny + j]);
+    //     }
+    // }
+    this->u_solved->printMatrix();
 }

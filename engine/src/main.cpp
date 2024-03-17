@@ -15,10 +15,11 @@ int main(int argc, char *argv[]){
     
     // FEM method (a bit sketchy since its taken from a project done in MATLAB :| )//
     std::cout<<"Model creation!";
-    Model model(10,10);
+    Model model(4,4);
     // std::cout<<"Model created!";
     model.imposeBCs(1, 0, 0, 0);
     model.assembleGlobalMatrices();
+    model.calculateSolution();
     // model.calculate();
 
 	// QApplication application(argc, argv);

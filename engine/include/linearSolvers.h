@@ -5,4 +5,4 @@
 #include <iostream>
 #include <algorithm>
 
-Matrix<double> conjugateGradient(Matrix<double> A, Matrix<double> b);
+Matrix<double> conjugateGradient(Matrix<double>& A,Matrix<double>& b);

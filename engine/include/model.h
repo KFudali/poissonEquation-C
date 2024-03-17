@@ -21,13 +21,13 @@ class Model
         std::unique_ptr<Matrix<double>> u_full;
         std::unique_ptr<Matrix<double>> u_solved;       
         
-        std::vector<double> interior_ids;
-        std::vector<double> boundary_ids;
+        std::vector<int> interior_ids;
+        std::vector<int> boundary_ids;
 
-        std::vector<double> bottom_ids;
-        std::vector<double> top_ids;
-        std::vector<double> left_ids;
-        std::vector<double> right_ids;
+        std::vector<int> bottom_ids;
+        std::vector<int> top_ids;
+        std::vector<int> left_ids;
+        std::vector<int> right_ids;
         double top_value;
         double bottom_value;
         double right_value;
@@ -43,6 +43,6 @@ class Model
     void assembleGlobalMatrices();
     void assembleKg();
     void updateBoundaryIds();
-    void calculateRhs();
+    void assembleRhs();
     void calculateSolution();
 };

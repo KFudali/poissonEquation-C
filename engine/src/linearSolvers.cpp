@@ -1,6 +1,6 @@
 #include "linearSolvers.h"
 
-Matrix<double> conjugateGradient(Matrix<double> A, Matrix<double> b)
+Matrix<double> conjugateGradient(Matrix<double>& A, Matrix<double>& b)
 {
     Matrix x(0., b.col, 1);
     

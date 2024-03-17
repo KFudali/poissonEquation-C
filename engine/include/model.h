@@ -19,8 +19,7 @@ class Model
         std::unique_ptr<Matrix<double>> K_g;
         std::unique_ptr<Matrix<double>> rhs;
         std::unique_ptr<Matrix<double>> u_full;
-        std::unique_ptr<Matrix<double>> u_solved;       
-        
+
         std::vector<int> interior_ids;
         std::vector<int> boundary_ids;
 

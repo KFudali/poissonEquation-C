@@ -6,8 +6,6 @@ Model::Model(int _nx, int _ny) : nx(_nx), ny(_ny){
     this->n_elements = (nx - 1) * (ny - 1);
     this->K_g = std::make_unique<Matrix<double>>(0., nx*nx, ny*ny);
     this->rhs = std::make_unique<Matrix<double>>(0., 1, nx*ny);
-    this->u_solved = std::make_unique<Matrix<double>>(0., nx, ny);
-    this->u_full = std::make_unique<Matrix<double>>(0., nx, ny);
 }
 
 Model::~Model(){}
@@ -70,7 +68,7 @@ void Model::updateBoundaryIds(){
     left_ids.reserve(ny);
     right_ids.reserve(ny);
     boundary_ids.reserve(2 * nx + 2 * ny);
-    interior_ids.reserve(nx * ny);
+    interior_ids.resize(nx* ny);
 
     for (int i = 0; i < nx; i++) {
         bottom_ids.push_back(i);
@@ -89,7 +87,8 @@ void Model::updateBoundaryIds(){
     std::sort(boundary_ids.begin(), boundary_ids.end());
     boundary_ids.erase(std::unique(boundary_ids.begin(), boundary_ids.end()), boundary_ids.end());
    
-    std::iota(interior_ids.begin(), interior_ids.end(), 1);
+    std::iota(interior_ids.begin(), interior_ids.end(), 0);
+
     interior_ids.erase(std::remove_if(interior_ids.begin(), interior_ids.end(),
 [&](int id){return std::binary_search(boundary_ids.begin(), boundary_ids.end(), id);}),
      interior_ids.end());
@@ -103,7 +102,7 @@ void Model::assembleRhs(){
 
     for(int i = 0; i < ny; i++){
         u[right_ids[i]] = right_value;
-        u[left_ids[i]] = right_value;
+        u[left_ids[i]] = left_value;
     }
 
     for(int i = 0; i < nx; i++){
@@ -124,32 +123,29 @@ void Model::assembleRhs(){
 
 void Model::calculateSolution(){
 
-    // this->rhs->printMatrix();
-    // this->K_g->printMatrix();
-
     Matrix<double> sol = conjugateGradient(*K_g, *rhs);
-    this->u_solved = std::make_unique<Matrix<double>>(std::move(sol));
 
-    // int id;
-    // fill the full solution with solved domain
+    std::vector<double> u_vec(nx*ny);
+    
+    for(int i = 0; i < (nx -2)*(ny - 2); ++i){
+        u_vec[interior_ids[i]] = sol(i,0);
+    }
+    for(int i = 0; i < ny; i++){
+        u_vec[right_ids[i]] = right_value;
+        u_vec[left_ids[i]] = left_value;
+    }
+    for(int i = 0; i < nx; i++){
+        u_vec[top_ids[i]] = top_value;
+        u_vec[bottom_ids[i]] = bottom_value;
+    }
+    this->u_full = std::make_unique<Matrix<double>>(0., nx, ny);
 
-    // for(const auto& id : interior_ids){
-
-    // int id;
-    // for(int i = 0; i < (int)interior_ids.size(); i++)
-    // {
-    //     id = interior_ids[i];
-    //     u[id] = this->u_solved.mat[i][0];
-    // }
-
-    // Matrix u_domain(0., nx,ny);
-    // //Reshape matrix
-    // for(int i = 0; i<nx; i++)
-    // {
-    //     for(int j = 0; j<nx; j++)
-    //     {       
-    //         u_domain.set(i,j, u[i*ny + j]);
-    //     }
-    // }
-    this->u_solved->printMatrix();
+    for(int i = 0; i < nx; i++)
+    {
+        for(int j = 0; j < ny; j++)
+        {       
+            this->u_full->set(i,j,u_vec[i*ny + j]);
+        }
+    }
+    this->u_full->printMatrix();
 }

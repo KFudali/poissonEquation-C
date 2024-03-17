@@ -32,7 +32,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
-	void render();
+	// void render();
 };
 
 #endif // MAINWINDOW_H

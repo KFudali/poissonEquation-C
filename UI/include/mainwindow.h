@@ -10,6 +10,7 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 #include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkSmartPointer.h>
 
 #include "model.h"
 #include "./ui_mainwindow.h"
@@ -24,15 +25,23 @@ class MainWindow : public QMainWindow
 
 private:
 	Ui::MainWindow *ui;
-	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mRenderWindow;
-	// std::unique_ptr<Model> model;
+	vtkSmartPointer<vtkGenericOpenGLRenderWindow> solutionWindow;
+	vtkSmartPointer<vtkGenericOpenGLRenderWindow> residualWindow;
+	std::unique_ptr<Model> model;
+
+	void setConnections();
+
 
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
-	// void render();
+	void createNewModel();
+	void assembleModel();
+	void calculateModel();
+	void plotSolution();
+	void plotResiduals();
 };
 
 #endif // MAINWINDOW_H

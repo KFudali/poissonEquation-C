@@ -60,6 +60,7 @@ void Model::assembleModel()
     updateBoundaryIds();
     assembleKg();
     assembleRhs();
+    getSolutionActor();
 }
 
 void Model::updateBoundaryIds(){
@@ -121,7 +122,7 @@ void Model::assembleRhs(){
 };
 
 
-void Model::calculateSolution(){
+void Model::solveModel(){
 
     Matrix<double> sol = conjugateGradient(*K_g, *rhs);
 
@@ -149,3 +150,31 @@ void Model::calculateSolution(){
     }
     this->u_full->printMatrix();
 }
+
+void Model::getSolutionActor(){
+
+    this->solutionGrid = vtkSmartPointer<vtkStructuredGrid>::New();
+
+    vtkNew<vtkDoubleArray> pointValues;
+    vtkNew<vtkPoints> points;
+
+    pointValues->SetNumberOfComponents(1);
+    pointValues->SetNumberOfTuples(nx*ny);
+
+    double x = 0;
+    double y = 0;
+    double dx = 1./(nx-1);
+    double dy = 1./(ny-1);
+    for(int i = 0; i < this->nx; ++i){
+        y = 0;
+        for(int j = 0; j < this->ny; ++j){
+            points->InsertNextPoint(x, y, 0.);
+            pointValues->InsertNextValue(this->u_full->mat[i][j]);
+            std::cout<< x << " " << y << std::endl;
+            y += dy;
+        }
+        x += dx;
+    }
+
+}
+

@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
 };
 
 void MainWindow::solveModel(){
-	this->model->calculateSolution();
+	this->model->solveModel();
 }
 
 void MainWindow::assembleModel(){

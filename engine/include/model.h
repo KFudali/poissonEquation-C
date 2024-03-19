@@ -7,6 +7,17 @@
 
 #include "matrix.h"
 #include "linearSolvers.h"
+#include <vtkSmartPointer.h>
+#include <vtkActor.h>
+#include <vtkDoubleArray.h>
+#include <vtkStructuredGrid.h>
+#include <vtkNew.h>
+#include <vtkPointData.h>
+#include <vtkActor.h>
+#include <vtkCellData.h>
+#include <vtkCellIterator.h>
+#include <vtkDataSetMapper.h>
+
 
 class Model
 {
@@ -32,17 +43,21 @@ class Model
         double right_value;
         double left_value;
 
-
         void assembleKg();
         void updateBoundaryIds();
         void assembleRhs();
+
+
+        vtkSmartPointer<vtkStructuredGrid> solutionGrid;
         
     public:
         Model(int nx, int ny);
         virtual ~Model();
 
         void assembleModel();
-        void calculateSolution();
+        void solveModel();
+        
+        void getSolutionActor();
 
         void changeTopBC(double value);
         void changeBottomBC(double value);

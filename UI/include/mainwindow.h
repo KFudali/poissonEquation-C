@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QVTKInteractor.h>
+#include <QDoubleValidator>
+#include <QPointer>>
 
 #include <vtkInteractorStyle.h>
 #include <vtkNew.h>
@@ -27,21 +29,31 @@ private:
 	Ui::MainWindow *ui;
 	vtkSmartPointer<vtkGenericOpenGLRenderWindow> solutionWindow;
 	vtkSmartPointer<vtkGenericOpenGLRenderWindow> residualWindow;
+
+	QPointer<QDoubleValidator> validator_top;
+	QPointer<QDoubleValidator> validator_bottom;
+	QPointer<QDoubleValidator> validator_right;
+	QPointer<QDoubleValidator> validator_left;
+
 	std::unique_ptr<Model> model;
-
 	void setConnections();
-
-
+	void setupValidators();
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-public slots:
+private slots:
+
 	void createNewModel();
 	void assembleModel();
 	void calculateModel();
 	void plotSolution();
 	void plotResiduals();
+
+	void onTopChanged(const QString &text);
+    void onBottomChanged(const QString &text);
+    void onRightChanged(const QString &text);
+    void onLeftChanged(const QString &text);
 };
 
 #endif // MAINWINDOW_H

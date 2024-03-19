@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QVTKInteractor.h>
 #include <QDoubleValidator>
-#include <QPointer>>
+#include <QPointer>
 
 #include <vtkInteractorStyle.h>
 #include <vtkNew.h>
@@ -37,18 +37,20 @@ private:
 
 	std::unique_ptr<Model> model;
 	void setConnections();
-	void setupValidators();
+	void setValidators();
+	void setActions();
+
+	void plotSolution();
+	void plotResiduals();
+	
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private slots:
 
-	void createNewModel();
 	void assembleModel();
-	void calculateModel();
-	void plotSolution();
-	void plotResiduals();
+	void solveModel();
 
 	void onTopChanged(const QString &text);
     void onBottomChanged(const QString &text);

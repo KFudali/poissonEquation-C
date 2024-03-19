@@ -13,7 +13,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->openGLWidget_solution->setRenderWindow(solutionWindow);
 	ui->openGLWidget_residual->setRenderWindow(residualWindow);
 
-	this->setupValidators();
+	this->setValidators();
+	this->setConnections();
+	this->setActions();
+
+	this->model = std::make_unique<Model>(20,20);
 
 
 	// ui->openGLWidget->setRenderWindow(mRenderWindow);
@@ -25,8 +29,21 @@ MainWindow::MainWindow(QWidget *parent) :
 	// 	this, &MainWindow::render);
 };
 
+void MainWindow::solveModel(){
+	this->model->calculateSolution();
+}
 
-void MainWindow::setupValidators(){
+void MainWindow::assembleModel(){
+	this->model->assembleModel();
+	this->ui->pushButton_solve->setEnabled(true);
+}
+
+void MainWindow::setActions(){
+	this->ui->pushButton_assemble->setEnabled(true);
+	this->ui->pushButton_solve->setEnabled(false);
+}
+
+void MainWindow::setValidators(){
 	QPointer<QDoubleValidator> validator_top = new QDoubleValidator(-999999.0, 999999.0, 2, this);
 	QPointer<QDoubleValidator> validator_bottom = new QDoubleValidator(-999999.0, 999999.0, 2, this);
 	QPointer<QDoubleValidator> validator_right = new QDoubleValidator(-999999.0, 999999.0, 2, this);
@@ -46,6 +63,9 @@ void MainWindow::setConnections(){
 	connect(ui->lineEdit_bottom, &QLineEdit::textChanged, this, &MainWindow::onBottomChanged);
 	connect(ui->lineEdit_right, &QLineEdit::textChanged, this, &MainWindow::onRightChanged);
 	connect(ui->lineEdit_left, &QLineEdit::textChanged, this, &MainWindow::onLeftChanged);
+
+	connect(ui->pushButton_assemble, &QPushButton::clicked, this, &MainWindow::assembleModel);
+	connect(ui->pushButton_solve, &QPushButton::clicked, this, &MainWindow::solveModel);
 };
 
 void MainWindow::onTopChanged(const QString &text) {

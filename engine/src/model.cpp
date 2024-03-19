@@ -47,7 +47,7 @@ void Model::assembleKg(){
 
 }
 
-void Model::assembleGlobalMatrices()
+void Model::assembleModel()
 {
     std::vector<std::vector<double>> K_e_vec = {
         {2./3., -1./6., -1./3., -1./6.},

@@ -14,16 +14,17 @@
 int main(int argc, char *argv[]){
     
     // FEM method (a bit sketchy since its taken from a project done in MATLAB :| )//
-    Model model(20,20);
+    // Model model(20,20);
     // std::cout<<"Model created!";
-    model.imposeBCs(1, 0, 0, 0);
-    model.assembleGlobalMatrices();
-    model.calculateSolution();
+    // model.imposeBCs(1, 0, 0, 0);
+    // model.assembleGlobalMatrices();
+    // model.calculateSolution();
     // model.calculate();
 
-	// QApplication application(argc, argv);
-    // MainWindow window;
-    // window.showNormal();
-	// // window.showMaximized();
-	// return application.exec();
+	QApplication application(argc, argv);
+    MainWindow window;
+
+    window.showNormal();
+	// window.showMaximized();
+	return application.exec();
 } 

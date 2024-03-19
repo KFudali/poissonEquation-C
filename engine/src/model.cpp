@@ -6,18 +6,18 @@ Model::Model(int _nx, int _ny) : nx(_nx), ny(_ny){
     this->n_elements = (nx - 1) * (ny - 1);
     this->K_g = std::make_unique<Matrix<double>>(0., nx*nx, ny*ny);
     this->rhs = std::make_unique<Matrix<double>>(0., 1, nx*ny);
+    this->top_value = 0;
+    this->bottom_value = 0;
+    this->right_value = 0;
+    this->left_value = 0;
 }
 
 Model::~Model(){}
 
-void Model::imposeBCs(double top_value, double bottom_value,
-                       double right_value, double left_value)
-                       {
-                            this->top_value = top_value;
-                            this->bottom_value = bottom_value;
-                            this->right_value = right_value;
-                            this->left_value = left_value;
-                       };
+void Model::changeTopBC(double value){this->top_value = value;};
+void Model::changeBottomBC(double value){this->bottom_value = value;};
+void Model::changeLeftBC(double value){this->right_value = value;};
+void Model::changeRightBC(double value){this->left_value= value;};
 
 void Model::assembleKg(){
 
@@ -47,7 +47,7 @@ void Model::assembleKg(){
 
 }
 
-void Model::assembleGlobalMatrices()
+void Model::assembleModel()
 {
     std::vector<std::vector<double>> K_e_vec = {
         {2./3., -1./6., -1./3., -1./6.},

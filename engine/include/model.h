@@ -31,17 +31,21 @@ class Model
         double bottom_value;
         double right_value;
         double left_value;
+
+
+        void assembleKg();
+        void updateBoundaryIds();
+        void assembleRhs();
         
     public:
         Model(int nx, int ny);
         virtual ~Model();
 
-    void imposeBCs(double top_value, double bottom_value,
-                    double right_value, double left_value);
+        void assembleModel();
+        void calculateSolution();
 
-    void assembleGlobalMatrices();
-    void assembleKg();
-    void updateBoundaryIds();
-    void assembleRhs();
-    void calculateSolution();
+        void changeTopBC(double value);
+        void changeBottomBC(double value);
+        void changeLeftBC(double value);
+        void changeRightBC(double value);
 };

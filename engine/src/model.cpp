@@ -151,7 +151,7 @@ void Model::solveModel(){
     this->u_full->printMatrix();
 }
 
-void Model::getSolutionActor(){
+void Model::updateSolutionActor(){
 
     this->solutionGrid = vtkSmartPointer<vtkStructuredGrid>::New();
 
@@ -176,5 +176,18 @@ void Model::getSolutionActor(){
         x += dx;
     }
 
-}
+    this->solutionGrid->SetPoints(points);
+    this->solutionGrid->GetPointData()->SetScalars(pointValues);
 
+    vtkSmartPointer<vtkDataSetMapper> mapper =
+        vtkSmartPointer<vtkDataSetMapper>::New();
+    mapper->SetInputData(this->solutionGrid);
+
+    this->solutionActor =
+        vtkSmartPointer<vtkActor>::New();
+    this->solutionActor->SetMapper(mapper);
+};
+
+vtkSmartPointer<vtkActor> Model::getSolutionActor(){
+    return this->solutionActor;
+};

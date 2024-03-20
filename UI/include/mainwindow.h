@@ -13,7 +13,7 @@
 #include <vtkRenderer.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkSmartPointer.h>
-
+#include <vtkNamedColors.h>
 #include "model.h"
 #include "./ui_mainwindow.h"
 
@@ -29,6 +29,7 @@ private:
 	Ui::MainWindow *ui;
 	vtkSmartPointer<vtkGenericOpenGLRenderWindow> solutionWindow;
 	vtkSmartPointer<vtkGenericOpenGLRenderWindow> residualWindow;
+	vtkSmartPointer<vtkRenderer> solutionRenderer;
 
 	QPointer<QDoubleValidator> validator_top;
 	QPointer<QDoubleValidator> validator_bottom;

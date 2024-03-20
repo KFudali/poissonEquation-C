@@ -7,6 +7,7 @@
 
 #include "matrix.h"
 #include "linearSolvers.h"
+
 #include <vtkSmartPointer.h>
 #include <vtkActor.h>
 #include <vtkDoubleArray.h>
@@ -14,9 +15,8 @@
 #include <vtkNew.h>
 #include <vtkPointData.h>
 #include <vtkActor.h>
-#include <vtkCellData.h>
-#include <vtkCellIterator.h>
 #include <vtkDataSetMapper.h>
+#include <vtkPolyDataMapper.h>
 
 
 class Model
@@ -49,6 +49,7 @@ class Model
 
 
         vtkSmartPointer<vtkStructuredGrid> solutionGrid;
+        vtkSmartPointer<vtkActor> solutionActor;
         
     public:
         Model(int nx, int ny);
@@ -57,7 +58,8 @@ class Model
         void assembleModel();
         void solveModel();
         
-        void getSolutionActor();
+        void updateSolutionActor();
+        vtkSmartPointer<vtkActor> getSolutionActor();
 
         void changeTopBC(double value);
         void changeBottomBC(double value);

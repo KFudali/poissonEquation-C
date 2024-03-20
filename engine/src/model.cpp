@@ -179,13 +179,21 @@ void Model::updateSolutionActor(){
     this->solutionGrid->SetPoints(points);
     this->solutionGrid->GetPointData()->SetScalars(pointValues);
 
-    vtkSmartPointer<vtkDataSetMapper> mapper =
-        vtkSmartPointer<vtkDataSetMapper>::New();
-    mapper->SetInputData(this->solutionGrid);
+    int dataSize = nx * ny;
+    vtkNew<vtkLookupTable> lut;
+    lut->SetNumberOfTableValues(dataSize);
+    lut->Build();
 
-    this->solutionActor =
-        vtkSmartPointer<vtkActor>::New();
+    // Create a mapper and actor
+    vtkNew<vtkDataSetMapper> mapper;
+    mapper->SetInputData(this->solutionGrid);
+    mapper->SetLookupTable(lut);
+    mapper->SetScalarRange(0, dataSize - 1);
+    mapper->ScalarVisibilityOn();
+
+    this->solutionActor = vtkSmartPointer<vtkActor>::New();
     this->solutionActor->SetMapper(mapper);
+
 };
 
 vtkSmartPointer<vtkActor> Model::getSolutionActor(){

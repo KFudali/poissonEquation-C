@@ -5,7 +5,9 @@
 #include <QVTKInteractor.h>
 #include <QDoubleValidator>
 #include <QPointer>
-
+#include <QWidget>
+#include <QVTKOpenGLNativeWidget.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkInteractorStyle.h>
 #include <vtkNew.h>
 #include <vtkRenderWindow.h>
@@ -14,8 +16,22 @@
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkSmartPointer.h>
 #include <vtkNamedColors.h>
+#include <vtkCamera.h>
 #include "model.h"
 #include "./ui_mainwindow.h"
+
+
+
+#include <vtkActor.h>
+#include <vtkNamedColors.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+#include <vtkSmartPointer.h>
+#include <vtkSphereSource.h>
 
 namespace Ui {
 class MainWindow;
@@ -27,9 +43,10 @@ class MainWindow : public QMainWindow
 
 private:
 	Ui::MainWindow *ui;
-	vtkSmartPointer<vtkGenericOpenGLRenderWindow> solutionWindow;
-	vtkSmartPointer<vtkGenericOpenGLRenderWindow> residualWindow;
+	QVTKOpenGLNativeWidget* solutionWidget;
 	vtkSmartPointer<vtkRenderer> solutionRenderer;
+	vtkSmartPointer<vtkRenderWindow> solutionWindow;
+	vtkSmartPointer<vtkRenderWindowInteractor> solutionInteractor;
 
 	QPointer<QDoubleValidator> validator_top;
 	QPointer<QDoubleValidator> validator_bottom;
@@ -47,12 +64,12 @@ private:
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+	~MainWindow();
 private slots:
 
 	void assembleModel();
 	void solveModel();
-
+	
 	void onTopChanged(const QString &text);
     void onBottomChanged(const QString &text);
     void onRightChanged(const QString &text);

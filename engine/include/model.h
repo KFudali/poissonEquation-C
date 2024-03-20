@@ -17,8 +17,9 @@
 #include <vtkActor.h>
 #include <vtkDataSetMapper.h>
 #include <vtkPolyDataMapper.h>
-
-
+#include <vtkContourFilter.h>
+#include <vtkLookupTable.h>
+#include <vtkNamedColors.h>
 class Model
 {
     private:
@@ -30,6 +31,7 @@ class Model
         std::unique_ptr<Matrix<double>> K_g;
         std::unique_ptr<Matrix<double>> rhs;
         std::unique_ptr<Matrix<double>> u_full;
+        std::unique_ptr<Matrix<int>> element_nodes_ids;
 
         std::vector<int> interior_ids;
         std::vector<int> boundary_ids;
@@ -46,7 +48,6 @@ class Model
         void assembleKg();
         void updateBoundaryIds();
         void assembleRhs();
-
 
         vtkSmartPointer<vtkStructuredGrid> solutionGrid;
         vtkSmartPointer<vtkActor> solutionActor;

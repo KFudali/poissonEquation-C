@@ -60,7 +60,6 @@ void Model::assembleModel()
     updateBoundaryIds();
     assembleKg();
     assembleRhs();
-    getSolutionActor();
 }
 
 void Model::updateBoundaryIds(){
@@ -155,8 +154,10 @@ void Model::updateSolutionActor(){
 
     this->solutionGrid = vtkSmartPointer<vtkStructuredGrid>::New();
 
+    std::cout << "executed updateSolution!";
     vtkNew<vtkDoubleArray> pointValues;
     vtkNew<vtkPoints> points;
+
 
     pointValues->SetNumberOfComponents(1);
     pointValues->SetNumberOfTuples(nx*ny);
@@ -168,14 +169,19 @@ void Model::updateSolutionActor(){
     for(int i = 0; i < this->nx; ++i){
         y = 0;
         for(int j = 0; j < this->ny; ++j){
-            points->InsertNextPoint(x, y, 0.);
+            for(int k = 0; k < 2; k++)
+            {
+                points->InsertNextPoint(x, y, k);
+
+            }
             pointValues->InsertNextValue(this->u_full->mat[i][j]);
-            std::cout<< x << " " << y << std::endl;
+            std::cout<< x << " " << y << " " << this->u_full->mat[i][j] <<std::endl;
             y += dy;
         }
         x += dx;
     }
-
+    this->solutionGrid->SetDimensions(static_cast<int>(nx), static_cast<int>(ny),
+                                static_cast<int>(2));
     this->solutionGrid->SetPoints(points);
     this->solutionGrid->GetPointData()->SetScalars(pointValues);
 
@@ -184,7 +190,7 @@ void Model::updateSolutionActor(){
     lut->SetNumberOfTableValues(dataSize);
     lut->Build();
 
-    // Create a mapper and actor
+    // // Create a mapper and actor
     vtkNew<vtkDataSetMapper> mapper;
     mapper->SetInputData(this->solutionGrid);
     mapper->SetLookupTable(lut);
@@ -193,9 +199,9 @@ void Model::updateSolutionActor(){
 
     this->solutionActor = vtkSmartPointer<vtkActor>::New();
     this->solutionActor->SetMapper(mapper);
-
 };
 
 vtkSmartPointer<vtkActor> Model::getSolutionActor(){
+    updateSolutionActor();
     return this->solutionActor;
 };

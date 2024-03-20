@@ -8,6 +8,7 @@
 #include "matrix.h"
 #include "linearSolvers.h"
 
+#include <vtkCellData.h>
 #include <vtkSmartPointer.h>
 #include <vtkActor.h>
 #include <vtkDoubleArray.h>

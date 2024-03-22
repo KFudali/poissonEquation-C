@@ -166,20 +166,28 @@ void Model::updateSolutionActor(){
     double y = 0;
     double dx = 1./(nx-1);
     double dy = 1./(ny-1);
-    for(int i = 0; i < this->nx; ++i){
+    for(int k = 0; k < 2; k++){
         y = 0;
-        for(int j = 0; j < this->ny; ++j){
-            for(int k = 0; k < 2; k++)
-            {
-                points->InsertNextPoint(x, y, k);
-
+        for(int i = 0; i < this->nx; ++i){
+            x = 0;
+            for(int j = 0; j < this->ny; ++j){
+                points->InsertNextPoint(x, y, static_cast<double>(k)/1000);
+                std::cout<< x << " " << y << " " << this->u_full->mat[i][j] <<std::endl;
+                x += dx;
             }
-            pointValues->InsertNextValue(this->u_full->mat[i][j]);
-            std::cout<< x << " " << y << " " << this->u_full->mat[i][j] <<std::endl;
             y += dy;
         }
-        x += dx;
+    }   
+    for(int i = 0; i < this->ny; ++i){
+        for(int j = 0; j < this->nx; ++j){
+            pointValues->InsertNextValue(this->u_full->mat[i][j]);
+        }
     }
+
+
+
+
+
     this->solutionGrid->SetDimensions(static_cast<int>(nx), static_cast<int>(ny),
                                 static_cast<int>(2));
     this->solutionGrid->SetPoints(points);
@@ -194,7 +202,7 @@ void Model::updateSolutionActor(){
     vtkNew<vtkDataSetMapper> mapper;
     mapper->SetInputData(this->solutionGrid);
     mapper->SetLookupTable(lut);
-    mapper->SetScalarRange(0, dataSize - 1);
+    mapper->SetScalarRange(0, 1);
     mapper->ScalarVisibilityOn();
 
     this->solutionActor = vtkSmartPointer<vtkActor>::New();
